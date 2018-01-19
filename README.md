@@ -2,7 +2,9 @@
 Shell utilities for managing disks within ceph clusters
 
 These are scripts developed at the Wellcome Sanger Institute to handle
-drive failures within our ceph storage nodes. There are currently two scripts:
+drive failures within our ceph storage nodes. The aim is to make it
+easier to have failed drives handled by people who aren't ceph
+experts. There are currently two scripts:
 
 1. `ceph_failed_osd.sh` - pass this the id of a ceph osd with a failed
 disk, and it will guide you as to which drive needs
