@@ -14,3 +14,7 @@ device each OSD is using, and the serial number of each drive. The
 previous script can use the log entries from this script to help in
 the case that a disk has failed such that it is no longer reachable by
 the OS
+
+Our storage nodes are Supermicro 4U servers, and these scripts make
+certain assumptions about drive layout that won't be true for other
+devices.
