@@ -213,7 +213,7 @@ if [ -b "$disk" ]; then
     else
 	echo "Drive is LUN ${lun}, corresponding to bay $bay"
     fi
-    if ledctl "failure=${disk}" ; then
+    if ledctl "failure=${disk}" 2>/dev/null ; then
 	echo "The red failure light should be illuminated on the drive bay."
     fi
     if readlink -e "/var/lib/ceph/osd/ceph-${osd}/journal" >/dev/null ; then
