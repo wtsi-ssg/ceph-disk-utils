@@ -158,7 +158,7 @@ find_missing_disk_bay()
 show_bay()
 {
     if [ "$#" -ne 1 ] ; then
-	echo "Internal Error: find_disk_in_kern_logs requires a single argument"
+	echo "Internal Error: show_bay requires a single argument"
 	return 1
     fi
     if [ "$1" -lt 0 -o "$1" -gt 59 ] ; then
