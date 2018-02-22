@@ -138,6 +138,7 @@ find_missing_disk_bay()
 	echo "There appear to be multiple bays without a lun"
 	echo "These correspond to the following luns:"
 	echo "$lun"
+	unset bay
     else
 	if [ "$lun" -gt 30 ]; then
 	    bay=$(($lun - 1))
