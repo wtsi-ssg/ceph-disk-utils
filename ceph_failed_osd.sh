@@ -135,7 +135,7 @@ find_missing_disk_bay()
 
     # check for multiple matches (by string length)
     if [ "${#lun}" -gt 2 ]; then
-	echo "There appear to be multiple failed drives."
+	echo "There appear to be multiple bays without a lun"
 	echo "These correspond to the following luns:"
 	echo "$lun"
     else
