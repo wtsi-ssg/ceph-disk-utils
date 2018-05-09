@@ -24,7 +24,7 @@ set -o pipefail
 
 # turn off a status light; this has the effect of turning them all off
 # ledctl is chatty and always returns 0 :-(
-ledctl off=/dev/sda 2>/dev/null
+/usr/sbin/ledctl off=/dev/sda 2>/dev/null
 
 for osd in $( systemctl --no-pager --no-legend --state=running -t service list-units 'ceph-osd*' | sed -e 's/^[^@]*@\([0-9]*\)\..*$/\1/' ) ; do
 	   
