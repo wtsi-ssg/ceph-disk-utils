@@ -269,6 +269,11 @@ fi
 
 echo -e "\nThe following commands WHICH ARE IRREVERSIBLE remove this osd
 and should be run on one of the ceph mon nodes, e.g. sto-1-1
+
+#First, run this and make sure the result is HEALTH_OK
+#If not, please report to ssg-isg@sanger.ac.uk and do not proceed
+ceph health
+
 ceph osd out osd.$osd
 ceph osd crush remove osd.$osd
 ceph auth del osd.$osd"
