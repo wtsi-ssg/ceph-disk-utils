@@ -26,14 +26,30 @@ set -o pipefail
 # ledctl is chatty and always returns 0 :-(
 /usr/sbin/ledctl off=/dev/sda 2>/dev/null
 
-for osd in $( systemctl --no-pager --no-legend --state=running -t service list-units 'ceph-osd*' | sed -e 's/^[^@]*@\([0-9]*\)\..*$/\1/' ) ; do
+#Different approach on newer systems with ceph-volume
+if [ -x /usr/sbin/ceph-volume ] ; then
+
+    while read -r osd journal disk; do #read in from ceph-volume | jq below
+
+    echo "osd ${osd} has journal on ${journal}"
+    echo -n "osd ${osd} is on drive ${disk}, drive serial "
+    /usr/sbin/smartctl -i "$disk" | sed -ne '/Serial/s/^.*: *//p'
+
+    done < <(ceph-volume lvm list --format=json | \
+     jq -r '.[] |"\(.[0].tags."ceph.osd_id") \(.[1].path) \(.[0].devices[0])"' )
+
+else
+    
+    for osd in $( systemctl --no-pager --no-legend --state=running -t service list-units 'ceph-osd*' | sed -e 's/^[^@]*@\([0-9]*\)\..*$/\1/' ) ; do
 	   
-    echo -n "osd ${osd} has journal on "
-    readlink -f "/var/lib/ceph/osd/ceph-${osd}/journal"
+	echo -n "osd ${osd} has journal on "
+	readlink -f "/var/lib/ceph/osd/ceph-${osd}/journal"
 
-    if part=$(findmnt -n -o SOURCE "/var/lib/ceph/osd/ceph-${osd}") ; then
-	echo -n "osd ${osd} is on partition ${part}, drive serial "
-	/usr/sbin/smartctl -i "${part}" | sed -ne '/Serial/s/^.*: *//p'
-    fi
+	if part=$(findmnt -n -o SOURCE "/var/lib/ceph/osd/ceph-${osd}") ; then
+	    echo -n "osd ${osd} is on partition ${part}, drive serial "
+	    /usr/sbin/smartctl -i "${part}" | sed -ne '/Serial/s/^.*: *//p'
+	fi
 
-done | logger -t osdtojour -ep daemon.info
+    done
+
+fi | logger -t osdtojour -ep daemon.info
