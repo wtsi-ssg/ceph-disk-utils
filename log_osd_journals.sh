@@ -35,7 +35,7 @@ if [ -x /usr/sbin/ceph-volume ] ; then
     echo -n "osd ${osd} is on drive ${disk}, drive serial "
     /usr/sbin/smartctl -i "$disk" | sed -ne '/Serial/s/^.*: *//p'
 
-    done < <(ceph-volume lvm list --format=json | \
+    done < <(/usr/sbin/ceph-volume lvm list --format=json | \
      jq -r '.[] |"\(.[0].tags."ceph.osd_id") \(.[1].path) \(.[0].devices[0])"' )
 
 else
