@@ -44,9 +44,14 @@ if [ $? -ne 0 ] ; then
 fi
 set -e
 
-# strip all trailing digits
-shopt -s extglob
-disk="${part%%+([0-9])}"
+#$part is tmpfs if this is a ceph-volume lvm setup
+if [ "$part" = "tmpfs" ] ; then
+    disk=$(pvs --noheadings -o pv_name -S lv_path=$(readlink -n "/var/lib/ceph/osd/ceph-${osd}/block") | sed -e 's/ //g')
+else
+    # strip all trailing digits
+    shopt -s extglob
+    disk="${part%%+([0-9])}"
+fi
 bnd=$(basename "$disk")
 
 # /usr/local/sbin/log_osd_journals.sh logs which journal partition is used
@@ -57,7 +62,7 @@ find_logged_journal()
 	echo "Internal Error: find_logged_journal requires a single argument"
 	return 1
     fi
-    echo -n "According to syslog, the journal is on "
+    echo -n "According to syslog, the journal/block.db is on "
     zcat -f /var/log/syslo* | sed -ne "/osdtojour: osd ${1} has/s/^.* on \(.*\)\$/\1/p" | head -n 1
 }
 
@@ -182,7 +187,11 @@ show_bay()
     echo "      FRONT"
 }
 
-echo "OSD $osd is on partition $part on disk $disk"
+if [ "$part" = "tmpfs" ] ; then
+    echo "OSD $osd is on disk $disk"
+else
+    echo "OSD $osd is on partition $part on disk $disk"
+fi
 
 if [ -b "$disk" ]; then
     if smartctl -Hq silent "$disk"; then
@@ -220,6 +229,9 @@ if [ -b "$disk" ]; then
     if readlink -e "/var/lib/ceph/osd/ceph-${osd}/journal" >/dev/null ; then
 	echo -n "Journal is to be found on "
 	readlink -e "/var/lib/ceph/osd/ceph-${osd}/journal"
+    elif readlink -e "/var/lib/ceph/osd/ceph-${osd}/block.db" >/dev/null ; then
+	echo -n "Block.db is to be found on "
+	readlink -e "/var/lib/ceph/osd/ceph-${osd}/block.db"
     else
 	find_logged_journal "${osd}"
     fi
