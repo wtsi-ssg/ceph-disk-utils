@@ -19,4 +19,5 @@ the OS
 
 Our storage nodes are Supermicro 4U servers, and these scripts make
 certain assumptions about drive layout that won't be true for other
-devices.
+devices. These scripts understand ceph-disk and ceph-volume created
+OSDs (and have been tested with Jewel and Luminous).
