@@ -178,7 +178,7 @@ show_bay()
 		echo -n "X"
 	    else echo -n "O"
 	    fi
-	    if [ "$i" -eq 6 -o "$i" -eq 12 ] ; then
+	    if [ "$i" -eq 5 -o "$i" -eq 11 ] ; then
 		echo -n "|"
 	    fi
 	done
