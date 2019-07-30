@@ -253,15 +253,13 @@ else # block device $disk absent
     # serial number, extracted from syslog
     find_missing_disk_bay "${osd}"
 
-    # If $bay is empty, this means that the above command didn't find a 
-    # single empty bay, so we won't be able to point out a drive bay
-    # instead, we light up all the drives we *do* have a device entry for.
+    # The block device corresponding to our drive is absent, so we
+    # can't light its failure LED.
+    # Instead, we light up all the drives we *do* have a device entry for.
     # This *should* leave a single unlight bay which contains our drive
-    if [ -z "$bay" ] ; then
-	if ledctl $( lsscsi | perl -ne 'next unless m{^\[0:}; next unless m{ (/dev/\S+)}; push @o, $1; END { print "failure={ @o }" }' ) 2>/dev/null ; then
-	    echo "Every red light *except* on the failed drive should be lit!"
-	fi
-	else
+    if ledctl $( lsscsi | perl -ne 'next unless m{^\[0:}; next unless m{ (/dev/\S+)}; push @o, $1; END { print "failure={ @o }" }' ) 2>/dev/null ; then
+	echo "Every red light *except* on the failed drive should be lit!"
+    else
 	echo "Attempting to light up the non-faulty drives failed"
     fi
 
