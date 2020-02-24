@@ -133,7 +133,7 @@ find_missing_disk_bay()
 
     # NB, this command is one logical line, using line continuation
     lun=$(join -v 1 \
-	<( for i in $(seq 29 ; seq 31 60);
+	<( for i in $(seq 0 29 ; seq 31 60);
 	    do echo "[0:0:${i}:0]"; done | sort -k 1b,1) \
 	<( lsscsi | sed -ne '/\[0.*disk.*/s/ .*$//p' | sort -k 1b,1) \
     | sed -e 's/\[0:0:\([0-9]*\):0\]/\1/')
